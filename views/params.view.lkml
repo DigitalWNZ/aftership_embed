@@ -27,6 +27,7 @@ view: params {
     default_value: "Please Choose Operator"
     allowed_value: {value: "substr"}
     allowed_value: {value: "regex"}
+    allowed_value: {value: "math"}
   }
 
   parameter: dimension_picker {

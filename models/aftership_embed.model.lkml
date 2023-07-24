@@ -39,16 +39,18 @@ explore: trackings_analytics{
   }
 }
 
-#If the "primary datasource" is supposed to be the first table in join and is determined by end_user, I am afraid multiple explore with different tables as the first table needs to be defined in advance.
+# If the "primary datasource" is supposed to be the first table in join and is determined by end_user, I am afraid multiple explore with different tables as the first table needs to be defined in advance.
 # Even if you pick fields from tracking analytics and dummy, orders will appear in the join.
-# explore: orders {
-#   join: trackings_analytics {
-#     type: cross
-#   }
-#   join: dummy {
-#     type: cross
-#   }
-# }
+explore: dummy {
+  join: trackings_analytics {
+    type: cross
+  }
+  join: orders {
+    type: cross
+  }
+}
 
 
 explore: orders {}
+
+explore: custom_test {}

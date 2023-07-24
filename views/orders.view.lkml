@@ -52,18 +52,6 @@ view: orders {
     sql: regexp_extract(${TABLE}.{% parameter dimension_picker %}, {% parameter pattern %}) ;;
   }
 
-  dimension: dynamic_dimension_picker {
-    type: string
-    label_from_parameter: dim_parse_type
-    sql:
-    {% if dim_parse_type._parameter_value == "'substr'" %}
-      ${substr_sample}
-    {% else %}
-      ${regex_sample}
-    {% endif %}
-    ;;
-  }
-
   dimension: sql_sample {
     type: string
     sql:
@@ -74,6 +62,22 @@ view: orders {
     {% endif %}
     ;;
   }
+
+  dimension: dynamic_dimension_picker {
+    type: string
+    label_from_parameter: dim_parse_type
+    sql:
+    {% if dim_parse_type._parameter_value == "'substr'" %}
+      ${substr_sample}
+    {% elsif dim_parse_type._parameter_value == "'regex'" %}
+      ${regex_sample}
+    {% else %}
+      ${sql_sample}
+    {% endif %}
+    ;;
+  }
+
+
 
 
 
@@ -113,6 +117,37 @@ view: orders {
     sql: ${TABLE}.order_id ;;
   }
 
+  filter: str_test {
+    type: string
+    suggest_dimension: order_id
+    sql:  order_id in ('0001') ;;
+    default_value: "('0001','0002')"
+  }
+
+  filter: str_test1 {
+    type: string
+    suggest_dimension: order_id
+    sql:
+      {% if orders.str_test1._is_filtered %}
+        {% condition str_test1 %} ${order_id} {% endcondition %}
+      {% else %}
+        ${order_id} = concat(extract(YEAR from current_date()),"-w", extract(WEEK from current_date())) or ${order_id} = concat(extract(YEAR from date_sub(current_date(), interval 7 day)),"-w", extract(WEEK from date_sub(current_date(),interval 7 day)))
+      {% endif %}
+    ;;
+  }
+
+  # filter: str_test2 {
+  #   type: string
+  #   suggest_dimension: order_id
+  #   sql:
+  #     {% if _filters['orders.str_test2'] == NULL %}
+  #       ${order_id} = concat("000","1")
+  #     {% else %}
+  #       ${order_id} = concat("000","2")
+  #     {% endif %}
+  #   ;;
+  # }
+
   dimension: order_owner_email {
     type: string
     sql: ${TABLE}.order_owner_email ;;
@@ -131,5 +166,20 @@ view: orders {
   measure: count {
     type: count
   }
+
+  measure: count_for_A {
+    type: number
+    sql: ${count}/2 ;;
+  }
+
+  measure: count_for_B {
+    type: number
+    sql: ${count}/3 ;;
+  }
+
+
+  # -------dsdfsd-----
+  # sdfsdf
+
 
 }
